@@ -101,7 +101,7 @@ app.get('/callback', function(req, res) {
                 function getArtists(error, response, body) {
                     // console.log(body)
                     artists = body.items.map(x => [x.name, x.popularity])
-                    console.log(artists)
+                    // console.log(artists)
                     saveData(artists, "artists")
                 }
 

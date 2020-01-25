@@ -84,9 +84,40 @@ app.get('/callback', function(req, res) {
                     refresh_token = body.refresh_token;
 
                 function getData(error, response, body){
+                    var tracks = body.items.map(x => x.id)
+                    console.log("tracks inside getData function")
+                    console.log(tracks)
                     body = body.items.map(x => [x.name, x.popularity])
                     console.log(body)
                     var jsonData = JSON.stringify(body);
+
+                    function features_handler(error, response, body) {
+                      // body = body.items.map(x => x)
+                      console.log("body in features_handler")
+                      console.log(body)
+                      body = body.audio_features
+                      var jsonData = JSON.stringify(body);
+                      var fs = require('fs');
+                      fs.writeFile("becky_features.txt", jsonData, function(err) {
+                          if (err) {
+                              console.log(err);
+                          }
+                      });
+                    }
+
+                    console.log("tracks before features")
+                    console.log(tracks.toString())
+                    tracks = tracks.toString()
+                    features = {
+                        url: 'https://api.spotify.com/v1/audio-features?ids='+tracks,
+                        headers: {
+                            'Authorization': 'Bearer ' + access_token
+                        },
+                        json: true
+                    };
+
+                    request.get(features, features_handler, false)
+
                     // var fs = require('fs');
                     // fs.writeFile("test.txt", jsonData, function(err) {
                     //     if (err) {

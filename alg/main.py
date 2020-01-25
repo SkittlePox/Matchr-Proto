@@ -1,16 +1,37 @@
 import json
 import os
+from Profile import *
 
 def main():
-    data = readArtistData()
     # data = readTrackData()
+    data = readArtistData()
+    profiles = []
+    for k, v in data.items():
+        prof = Profile(k.split("/")[-1], v)
+        profiles.append(prof)
+
+    print(profiles[0])
+    u1 = profiles[4]
+    u2 = profiles[1]
+
+    for i in range(0, len(profiles)):
+        print(profiles[i], u1.popSimilarity(profiles[i]))
+
     # print(data.keys())
     # vals = list(data.values())
     # vvv = list(map(lambda x: [x[0], x[1], popScore(int(x[1]))], vals[0]))
     # print(vvv)
     # print(popSimilarity(vals[3], vals[5]))
     # print(setSimilarity())
-    print(popScore(50))
+    # print(popScore(50))
+    # multitest(vals)
+
+def multitest(entries):
+    for a in entries:
+        for b in entries:
+            if a is not b:
+                print(popSimilarity(a, b))
+
 
 def readArtistData():
     directory = "/Users/Benjamin/MTG/HackatBrown2020/Matchr/alg/data/topartists"
@@ -49,9 +70,6 @@ def setSimilarity(entry1, entry2):
     z = set1.intersection(set2)
     return z
 
-def popScore(pop):
-    return (110 - pop)/10.0
-
 def popSimilarity(entry1, entry2):
     score = 0
     breakdown = []
@@ -61,7 +79,7 @@ def popSimilarity(entry1, entry2):
             if a[0] == b[0]:
                 breakdown.append(a)
                 score += popScore(a[1])
-    print(breakdown)
+    return score
 
 
 if __name__ == "__main__":

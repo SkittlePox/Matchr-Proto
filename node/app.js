@@ -83,27 +83,40 @@ app.get('/callback', function(req, res) {
                 var access_token = body.access_token,
                     refresh_token = body.refresh_token;
 
+                function saveData(data, name) {
+                    var jsonData = JSON.stringify(data);
+                    var fs = require('fs');
+                    fs.writeFile(name+".txt", jsonData, function(err) {
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
+                }
+
                 function getData(error, response, body){
                     body = body.items.map(x => [x.name, x.popularity])
                     console.log(body)
-                    var jsonData = JSON.stringify(body);
-                    // var fs = require('fs');
-                    // fs.writeFile("test.txt", jsonData, function(err) {
-                    //     if (err) {
-                    //         console.log(err);
-                    //     }
-                    // });
                 }
 
-                auth = {
-                    url: 'https://api.spotify.com/v1/me/top/tracks?limit=50',
+                function getArtists(error, response, body) {
+                    // console.log(body)
+                    artists = body.items.map(x => [x.name, x.popularity])
+                    console.log(artists)
+                    saveData(artists, "artists")
+                }
+
+                reqUrls = ['https://api.spotify.com/v1/me/top/tracks?limit=50',
+                    'https://api.spotify.com/v1/me/top/artists?limit=50']
+
+                req = {
+                    url: reqUrls[1],
                     headers: {
                         'Authorization': 'Bearer ' + access_token
                     },
                     json: true
                 };
 
-                request.get(auth, getData, false)
+                request.get(req, getArtists, false)
 
                 // we can also pass the token to the browser to make requests from there
                 res.redirect('/#' +

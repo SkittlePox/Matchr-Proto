@@ -20,17 +20,40 @@ class NewProfile:
         self.artists = artists
         self.topTracks = topTracks
         self.allTracks = allTracks
+        ####
+        self.matches = []
 
     def similarity(self, other):
         score = 0.0
+
+        artistScore = 0.0
         for a_name, a_id, a_pop in self.artists:
             for b_name, b_id, b_pop in other.artists:
                 if a_id == b_id:
                     match_score = sigmoidalPopularityScore(a_pop)
-                    score += match_score
-                    print(a_pop, a_name, match_score)
-        return score
+                    artistScore += match_score
 
+        topTrackScore = 0.0
+        for a_name, a_id, a_pop in self.topTracks:
+            for b_name, b_id, b_pop in other.topTracks:
+                if a_id == b_id:
+                    match_score = sigmoidalPopularityScore(a_pop)
+                    artistScore += match_score
+
+        allTrackScore = 0.0
+        for a_name, a_id, a_pop in self.allTracks:
+            for b_name, b_id, b_pop in other.allTracks:
+                if a_id == b_id:
+                    match_score = sigmoidalPopularityScore(a_pop)
+                    artistScore += match_score
+
+        print("a", artistScore)
+        print("b", topTrackScore)
+        print("c", allTrackScore)
+        score = ARTISTS_WEIGHT * artistScore + ALL_TRACKS_WEIGHT * allTrackScore + TOP_TRACKS_WEIGHT * topTrackScore
+                    # print(a_pop, a_name, match_score)
+        # print(self.name, other.name, score)
+        return score
     def __str__(self):
         return f"<{self.id} {self.name} {self.email}>"
 

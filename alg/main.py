@@ -2,21 +2,10 @@ import json
 import os
 from fire_query import *
 from Profile import *
+from queue import PriorityQueue
+import requests
 
 def main():
-    # data = readTrackData()
-    # data = readArtistData()
-    # profiles = []
-    # for k, v in data.items():
-    #     prof = Profile(k.split("/")[-1], v)
-    #     profiles.append(prof)
-    #
-    # print(profiles[0])
-    # u1 = profiles[4]
-    # u2 = profiles[1]
-    #
-    # for i in range(0, len(profiles)):
-    #     print(profiles[i], u1.popSimilarity(profiles[i]))
     users = retrieveUsers() # list of user Profile objects
     # print(users[0])
     # for i in range(0, 101):
@@ -25,63 +14,42 @@ def main():
     b = users[1]
     c = users[3]
     print(b.similarity(c))
+    # print(b.similarity(users[2]))
+    # print(get_matches(b, users))
+    # print(get_matches(b, users))
+    # populateMatches(users)
+    # print(users[4].matches)
 
+def postMatches(users):
+    url = ""
+    for u in users:
+        data = {"matches": str(u.matches)}
+        r = requests.post(url, data)
 
-def multitest(entries):
-    for a in entries:
-        for b in entries:
-            if a is not b:
-                print(popSimilarity(a, b))
+def populateMatches(users):
+    def popMatch(t):
+        t.matches = list(map(lambda x: x.id, get_matches(t, users)))
+    for u in users:
+        popMatch(u)
 
+def get_matches(target, users):
+    max_size = 2
+    matches = PriorityQueue()    ## max is 2 (6)
+    for u in users:
+        if not target.id == u.id:
+            if matches.qsize() < max_size:
+                matches.put((target.similarity(u), u))
+            else:
+                min_score = matches.get()
+                sim_score = target.similarity(u)
+                if sim_score > min_score[0]:
+                    matches.put((sim_score, u))
+                else:
+                    matches.put(min_score)
 
-def readArtistData():
-    directory = "/Users/Benjamin/MTG/HackatBrown2020/Matchr/alg/data/topartists"
-    files = []
-    # r=root, d=directories, f = files
-    for r, d, f in os.walk(directory):
-        for file in f:
-            if '.txt' in file:
-                files.append(os.path.join(r, file))
-    data = {}
-    for f in files:
-        with open(f) as json_file:
-            subdata = json.load(json_file)
-            data.update({f: subdata})
-    return data
-
-def readTrackData():
-    directory = "/Users/Benjamin/MTG/HackatBrown2020/Matchr/alg/data/toptracks"
-    files = []
-    # r=root, d=directories, f = files
-    for r, d, f in os.walk(directory):
-        for file in f:
-            if '.txt' in file:
-                files.append(os.path.join(r, file))
-    data = {}
-    for f in files:
-        with open(f) as json_file:
-            subdata = json.load(json_file)
-            data.update({f: subdata})
-    return data
-
-def setSimilarity(entry1, entry2):
-    #[[song, pop], [song,pop]]
-    set1 = set(list(map(lambda x: x[0], entry1)))
-    set2 = set(list(map(lambda x: x[0], entry2)))
-    z = set1.intersection(set2)
-    return z
-
-def popSimilarity(entry1, entry2):
-    score = 0
-    breakdown = []
-
-    for a in entry1:
-        for b in entry2:
-            if a[0] == b[0]:
-                breakdown.append(a)
-                score += popScore(a[1])
-    return score
-
+    ls = list(map(lambda x: (x[0], str(x[1])), list(matches.queue)))
+    ls.reverse()
+    return ls
 
 if __name__ == "__main__":
     main()

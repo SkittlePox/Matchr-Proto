@@ -13,22 +13,26 @@ def main():
     # print(list(map(lambda x: x.name, users)))
     b = users[2]
     c = users[0]
-    print(b.similarity(c))
+    # print(b.similarity(c))
     # print(b.similarity(users[2]))
     # print(get_matches(b, users))
     # print(get_matches(b, users))
-    # populateMatches(users)
+    populateMatches(users)
+    # print(users)
     # print(users[4].matches)
+    postMatches(users)
 
 def postMatches(users):
-    url = ""
+    url = "https://us-central1-musical-buddies.cloudfunctions.net/api/addMatches"
     for u in users:
-        data = {"matches": str(u.matches)}
+        # print(u.matches)
+        data = {"id": str(u.id),
+                "matches": str(u.matches)}
         r = requests.post(url, data)
 
 def populateMatches(users):
     def popMatch(t):
-        t.matches = list(map(lambda x: x.id, get_matches(t, users)))
+        t.matches = list(map(lambda x: x, get_matches(t, users)))
     for u in users:
         popMatch(u)
 
@@ -47,7 +51,7 @@ def get_matches(target, users):
                 else:
                     matches.put(min_score)
 
-    ls = list(map(lambda x: (x[0], str(x[1])), list(matches.queue)))
+    ls = list(map(lambda x: (x[0], str(x[1].id)), list(matches.queue)))
     ls.reverse()
     return ls
 

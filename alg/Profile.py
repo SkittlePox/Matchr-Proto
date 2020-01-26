@@ -1,8 +1,8 @@
 import math
 
 ALL_TRACKS_WEIGHT = 1.0
-TOP_TRACKS_WEIGHT = 1.0
-ARTISTS_WEIGHT = 1.0
+TOP_TRACKS_WEIGHT = 5.0
+ARTISTS_WEIGHT = 5.0
 
 def sigmoidalPopularityScore(popScore):
     z = 64.0
@@ -47,9 +47,9 @@ class NewProfile:
                     match_score = sigmoidalPopularityScore(a_pop)
                     allTrackScore += match_score
 
-        print("a", artistScore)
-        print("b", topTrackScore)
-        print("c", allTrackScore)
+        # print("a", artistScore)
+        # print("b", topTrackScore)
+        # print("c", allTrackScore)
         score = ARTISTS_WEIGHT * artistScore + ALL_TRACKS_WEIGHT * allTrackScore + TOP_TRACKS_WEIGHT * topTrackScore
                     # print(a_pop, a_name, match_score)
         # print(self.name, other.name, score)

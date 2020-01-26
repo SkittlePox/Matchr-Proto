@@ -161,7 +161,7 @@ app.get('/callback', function(req, res) {
                             trks = body.items.map(x => x.id)
                             function getTrackInfo(error, response, body) {
                                 // console.log(body);
-                                if (!!body.tracks) {
+                                if (!!body) {
                                     trkfinal = body.tracks.map(x => [x.name, x.id, x.popularity])
                                     alltracks = alltracks.concat(trkfinal)
                                 }

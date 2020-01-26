@@ -158,8 +158,22 @@ app.get('/callback', function(req, res) {
                     }
                     function getAllTracksFromAlbum(error, response, body) {
                         if (!!body.items) {
-                            trks = body.items.map(x => x.name)
-                            alltracks = alltracks.concat(trks)
+                            trks = body.items.map(x => x.id)
+                            function getTrackInfo(error, response, body) {
+                                // console.log(body);
+                                if (!!body.tracks) {
+                                    trkfinal = body.tracks.map(x => [x.name, x.id, x.popularity])
+                                    alltracks = alltracks.concat(trkfinal)
+                                }
+                            }
+                            reqTrackInfo = {
+                                url: 'https://api.spotify.com/v1/tracks?ids='+trks.toString(),
+                                headers: {
+                                    'Authorization': 'Bearer ' + access_token
+                                },
+                                json: true
+                            }
+                            request.get(reqTrackInfo, getTrackInfo, false)
                         }
                     }
                     for(var i = 0; i < albumIDs.length; i++) {

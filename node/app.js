@@ -49,7 +49,6 @@ app.get('/login', function(req, res) {
 });
 
 app.get('/callback', function(req, res) {
-
     // your application requests refresh and access tokens
     // after checking the state parameter
 
@@ -83,40 +82,194 @@ app.get('/callback', function(req, res) {
                 var access_token = body.access_token,
                     refresh_token = body.refresh_token;
 
-                function saveData(data, name) {
-                    var jsonData = JSON.stringify(data);
-                    var fs = require('fs');
-                    fs.writeFile(name+".txt", jsonData, function(err) {
-                        if (err) {
-                            console.log(err);
+                // function saveData(data, name) {
+                //     var jsonData = JSON.stringify(data);
+                //     var fs = require('fs');
+                //     fs.writeFile(name+".txt", jsonData, function(err) {
+                //         if (err) {
+                //             console.log(err);
+                //         }
+                //     });
+                // }
+
+                var toptracks = []
+                var alltracks = []
+                var topartists = []
+                var name = ""
+                var email = ""
+
+
+
+
+
+
+
+
+
+                // function getData(error, response, body){
+                //     body = body.items.map(x => [x.name, x.popularity])
+                //     console.log(body)
+                // }
+                //
+                // function getArtists(error, response, body) {
+                //     // console.log(body)
+                //     artists = body.items.map(x => [x.name, x.popularity])
+                //     // console.log(artists)
+                //     saveData(artists, "artists")
+                // }
+                //
+                // function getAll(error, response, body) {
+                //
+                // }
+
+                function getTopTracks(error, response, body) {
+                    toptracks = body.items.map(x => [x.name, x.id, x.popularity])
+                    // console.log(toptracks)
+                }
+
+                function getTopArtists(error, response, body) {
+                    topartists = body.items.map(x => [x.name, x.id, x.popularity])
+                    // console.log(topartists);
+                }
+
+                function getAllTracks(error, response, body) {
+                    if (!!body.items) {
+                        trks = body.items.map(x => [x.track.name, x.track.id, x.track.popularity])
+                        alltracks = alltracks.concat(trks)
+                    }
+
+                    if (!!body.next) {
+                        reqAllTracksRec = {
+                            url: body.next,
+                            headers: {
+                                'Authorization': 'Bearer ' + access_token
+                            },
+                            json: true
+                        };
+                        request.get(reqAllTracksRec, getAllTracks, false)
+                    } else {
+                        // console.log(alltracks)
+                    }
+                }
+
+                function getAllAlbums(error, response, body) {
+                    if (!!body.items) {
+                        albumIDs = body.items.map(x => x.album.id)
+                    }
+                    function getAllTracksFromAlbum(error, response, body) {
+                        if (!!body.items) {
+                            trks = body.items.map(x => x.name)
+                            alltracks = alltracks.concat(trks)
                         }
-                    });
+                    }
+                    for(var i = 0; i < albumIDs.length; i++) {
+                        // console.log(albumIDs[i])
+                        reqTracksFromAlbum = {
+                            url: 'https://api.spotify.com/v1/albums/'+albumIDs[i]+'/tracks?limit=50',
+                            headers: {
+                                'Authorization': 'Bearer ' + access_token
+                            },
+                            json: true
+                        };
+                        request.get(reqTracksFromAlbum, getAllTracksFromAlbum, false)
+                    }
+                    if (!!body.next) {
+                        reqAllAlbumsRec = {
+                            url: body.next,
+                            headers: {
+                                'Authorization': 'Bearer ' + access_token
+                            },
+                            json: true
+                        };
+                        request.get(reqAllAlbumsRec, getAllAlbums, false)
+                    } else {
+                        // console.log(albumIDs)
+                    }
                 }
 
-                function getData(error, response, body){
-                    body = body.items.map(x => [x.name, x.popularity])
-                    console.log(body)
+                function getNameAndEmail(error, response, body) {
+                    name = body.display_name
+                    email = body.email
+                    // console.log(name)
+                    // console.log(email)
                 }
 
-                function getArtists(error, response, body) {
-                    // console.log(body)
-                    artists = body.items.map(x => [x.name, x.popularity])
-                    // console.log(artists)
-                    saveData(artists, "artists")
-                }
-
-                reqUrls = ['https://api.spotify.com/v1/me/top/tracks?limit=50',
-                    'https://api.spotify.com/v1/me/top/artists?limit=50']
-
-                req = {
-                    url: reqUrls[1],
+                reqTopTracks = {
+                    url: 'https://api.spotify.com/v1/me/top/tracks?limit=50',
                     headers: {
                         'Authorization': 'Bearer ' + access_token
                     },
                     json: true
                 };
+                reqTopArtists = {
+                    url: 'https://api.spotify.com/v1/me/top/artists?limit=50',
+                    headers: {
+                        'Authorization': 'Bearer ' + access_token
+                    },
+                    json: true
+                };
+                reqAllTracks = {
+                    url: 'https://api.spotify.com/v1/me/tracks?limit=50&offset=0',
+                    headers: {
+                        'Authorization': 'Bearer ' + access_token
+                    },
+                    json: true
+                };
+                reqAllAlbums = {
+                    url: 'https://api.spotify.com/v1/me/albums?limit=50&offset=0',
+                    headers: {
+                        'Authorization': 'Bearer ' + access_token
+                    },
+                    json: true
+                }
+                reqNameAndEmail = {
+                    url: 'https://api.spotify.com/v1/me',
+                    headers: {
+                        'Authorization': 'Bearer ' + access_token
+                    },
+                    json: true
+                }
 
-                request.get(req, getArtists, false)
+                request.get(reqTopTracks, getTopTracks, false)
+                request.get(reqTopArtists, getTopArtists, false)
+                request.get(reqAllTracks, getAllTracks, false)
+                request.get(reqAllAlbums, getAllAlbums, false)
+                request.get(reqNameAndEmail, getNameAndEmail, false)
+
+
+
+
+
+                function stateChange() {
+                    function postCallback(error, response, body) {
+                        console.log(body);
+                    }
+
+                    setTimeout(function () {
+                        // reqPost = {
+                        //     json: {
+                        //         name: "sdfs",
+                        //         email: "sdsssss",
+                        //         artists: "sdfaaa",
+                        //         toptracks: "asdfasdf",
+                        //         alltracks: "ooo"
+                        //     }
+                        // }
+                        reqPost = {
+                            json: {
+                                name: name,
+                                email: email,
+                                artists: JSON.stringify(topartists),
+                                topTracks: JSON.stringify(toptracks),
+                                allTracks: JSON.stringify(alltracks)
+                            }
+                        }
+                        request.post('http://us-central1-musical-buddies.cloudfunctions.net/api/newUser', reqPost, postCallback)
+                    }, 5000);
+                }
+                stateChange()
+
+
 
                 // we can also pass the token to the browser to make requests from there
                 res.redirect('/#' +

@@ -239,6 +239,9 @@ app.get('/callback', function(req, res) {
 
 
 
+                function removeDuplicates(array) {
+                  return array.filter((a, b) => array.indexOf(a) === b)
+                };
 
                 function stateChange() {
                     function postCallback(error, response, body) {
@@ -246,22 +249,13 @@ app.get('/callback', function(req, res) {
                     }
 
                     setTimeout(function () {
-                        // reqPost = {
-                        //     json: {
-                        //         name: "sdfs",
-                        //         email: "sdsssss",
-                        //         artists: "sdfaaa",
-                        //         toptracks: "asdfasdf",
-                        //         alltracks: "ooo"
-                        //     }
-                        // }
                         reqPost = {
                             json: {
                                 name: name,
                                 email: email,
                                 artists: JSON.stringify(topartists),
                                 topTracks: JSON.stringify(toptracks),
-                                allTracks: JSON.stringify(alltracks)
+                                allTracks: JSON.stringify(removeDuplicates(alltracks))
                             }
                         }
                         request.post('http://us-central1-musical-buddies.cloudfunctions.net/api/newUser', reqPost, postCallback)

@@ -1,30 +1,31 @@
 import json
 import os
+from fire_query import *
 from Profile import *
 
 def main():
     # data = readTrackData()
-    data = readArtistData()
-    profiles = []
-    for k, v in data.items():
-        prof = Profile(k.split("/")[-1], v)
-        profiles.append(prof)
+    # data = readArtistData()
+    # profiles = []
+    # for k, v in data.items():
+    #     prof = Profile(k.split("/")[-1], v)
+    #     profiles.append(prof)
+    #
+    # print(profiles[0])
+    # u1 = profiles[4]
+    # u2 = profiles[1]
+    #
+    # for i in range(0, len(profiles)):
+    #     print(profiles[i], u1.popSimilarity(profiles[i]))
+    users = retrieveUsers() # list of user Profile objects
+    # print(users[0])
+    # for i in range(0, 101):
+    #     print(i, sigmoidalPopularityScore(i))
+    # print(list(map(lambda x: x.name, users)))
+    b = users[1]
+    c = users[3]
+    print(b.similarity(c))
 
-    print(profiles[0])
-    u1 = profiles[4]
-    u2 = profiles[1]
-
-    for i in range(0, len(profiles)):
-        print(profiles[i], u1.popSimilarity(profiles[i]))
-
-    # print(data.keys())
-    # vals = list(data.values())
-    # vvv = list(map(lambda x: [x[0], x[1], popScore(int(x[1]))], vals[0]))
-    # print(vvv)
-    # print(popSimilarity(vals[3], vals[5]))
-    # print(setSimilarity())
-    # print(popScore(50))
-    # multitest(vals)
 
 def multitest(entries):
     for a in entries:

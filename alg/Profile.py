@@ -12,7 +12,7 @@ def sigmoidalPopularityScore(popScore):
     return z/denom
 
 class NewProfile:
-    def __init__(self, id, name, email, artists, topTracks, allTracks):
+    def __init__(self, id, name, email, artists, topTracks, allTracks, url):
         self.id = id
         self.name = name
         self.email = email
@@ -22,6 +22,7 @@ class NewProfile:
         self.allTracks = allTracks
         ####
         self.matches = []
+        self.url = url
 
     def similarity(self, other):
         score = 0.0

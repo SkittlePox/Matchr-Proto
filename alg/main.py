@@ -37,7 +37,7 @@ def populateMatches(users):
         popMatch(u)
 
 def get_matches(target, users):
-    max_size = 2
+    max_size = 5
     matches = PriorityQueue()    ## max is 2 (6)
     for u in users:
         if not target.id == u.id:
@@ -51,7 +51,7 @@ def get_matches(target, users):
                 else:
                     matches.put(min_score)
 
-    ls = list(map(lambda x: (x[0], str(x[1].id)), list(matches.queue)))
+    ls = list(map(lambda x: (x[0], str(x[1].name), str(x[1].url)), list(matches.queue)))
     ls.reverse()
     return ls
 

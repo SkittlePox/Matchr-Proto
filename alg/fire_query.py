@@ -22,7 +22,8 @@ def retrieveUsers():
         allTracks = json.loads(p['allTracks'])
         name = p['name']
         email = p['email']
-        return NewProfile(id, name, email, artists, topTracks, allTracks)
+        url = p['url']
+        return NewProfile(id, name, email, artists, topTracks, allTracks, url)
 
     z = list(map(castUser, userItems))
     return z

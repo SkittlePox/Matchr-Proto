@@ -38,14 +38,14 @@ class NewProfile:
             for b_name, b_id, b_pop in other.topTracks:
                 if a_id == b_id:
                     match_score = sigmoidalPopularityScore(a_pop)
-                    artistScore += match_score
+                    topTrackScore += match_score
 
         allTrackScore = 0.0
         for a_name, a_id, a_pop in self.allTracks:
             for b_name, b_id, b_pop in other.allTracks:
                 if a_id == b_id:
                     match_score = sigmoidalPopularityScore(a_pop)
-                    artistScore += match_score
+                    allTrackScore += match_score
 
         print("a", artistScore)
         print("b", topTrackScore)

@@ -157,7 +157,7 @@ app.get('/callback', function(req, res) {
                         albumIDs = body.items.map(x => x.album.id)
                     }
                     function getAllTracksFromAlbum(error, response, body) {
-                        if (!!body.items) {
+                        if (!!body) {
                             trks = body.items.map(x => x.id)
                             function getTrackInfo(error, response, body) {
                                 // console.log(body);

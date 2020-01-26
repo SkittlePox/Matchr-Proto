@@ -11,8 +11,8 @@ def main():
     # for i in range(0, 101):
     #     print(i, sigmoidalPopularityScore(i))
     # print(list(map(lambda x: x.name, users)))
-    b = users[1]
-    c = users[3]
+    b = users[2]
+    c = users[0]
     print(b.similarity(c))
     # print(b.similarity(users[2]))
     # print(get_matches(b, users))
